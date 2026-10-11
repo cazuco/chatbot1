@@ -22,6 +22,12 @@ else:
     # Geminiクライアントを作成
     client = genai.Client(api_key=gemini_api_key)
 
+    # ▼ここから追加（確認が済んだら消してOK）
+    with st.expander("使えるモデル一覧"):
+        for m in client.models.list():
+            st.write(m.name)
+    # ▲ここまで追加
+
     # 会話履歴をセッションに保存
     if "messages" not in st.session_state:
         st.session_state.messages = []
