@@ -4,6 +4,10 @@ from google import genai
 # 使用するモデル（エラーが出たらここを変更）
 MODEL = "gemini-3-flash-preview"
 
+# アイコンの設定（絵文字のほか、画像のURLやファイルパスも指定できます）
+USER_AVATAR = "👩‍⚕️"   # 自分側
+BOT_AVATAR = "🤖"      # 相手（AI）側
+
 # タイトルと説明
 st.title("💬 Chatbot")
 st.write(
@@ -26,17 +30,18 @@ else:
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # これまでの会話を表示
+    # これまでの会話を表示（★アイコン指定 1か所目）
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
+        avatar = USER_AVATAR if message["role"] == "user" else BOT_AVATAR
+        with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
     # 入力欄
     if prompt := st.chat_input("メッセージを入力してください"):
 
-        # ユーザーの入力を保存・表示
+        # ユーザーの入力を保存・表示（★アイコン指定 2か所目）
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar=USER_AVATAR):
             st.markdown(prompt)
 
         # Gemini用に履歴を変換（Geminiでは assistant ではなく "model" という役割名）
@@ -57,7 +62,7 @@ else:
                 if chunk.text:
                     yield chunk.text
 
-        # 応答を表示して保存
-        with st.chat_message("assistant"):
+        # 応答を表示して保存（★アイコン指定 3か所目）
+        with st.chat_message("assistant", avatar=BOT_AVATAR):
             response = st.write_stream(stream_response())
         st.session_state.messages.append({"role": "assistant", "content": response})
